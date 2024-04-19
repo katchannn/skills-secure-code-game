@@ -16,18 +16,25 @@ from collections import namedtuple
 Order = namedtuple('Order', 'id, items')
 Item = namedtuple('Item', 'type, description, amount, quantity')
 
+MAX_ITEM_AMOUNT = 100000
+
 def validorder(order: Order):
-    net = 0
+    product = 0 # 買った商品の金額
+    payment = 0 # 支払った金額
 
     for item in order.items:
-        if item.type == 'payment':
-            net += item.amount
-        elif item.type == 'product':
-            net -= item.amount * item.quantity
+        if item.type == 'product':
+            if 0 < item.amount < MAX_ITEM_AMOUNT:
+                product += item.amount * item.quantity
+        elif item.type == 'payment':
+            if -MAX_ITEM_AMOUNT < item.amount < MAX_ITEM_AMOUNT:
+                payment += item.amount
         else:
             return "Invalid item type: %s" % item.type
 
-    if net != 0:
-        return "Order ID: %s - Payment imbalance: $%0.2f" % (order.id, net)
-    else:
+    # 商品の金額と支払った金額が一致している場合
+    if product == payment:
         return "Order ID: %s - Full payment received!" % order.id
+    else:
+        print(payment, product)
+        return "Order ID: %s - Payment imbalance: $%0.2f" % (order.id, payment-product)
