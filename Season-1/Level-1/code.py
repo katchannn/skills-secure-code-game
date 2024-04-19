@@ -18,6 +18,7 @@ Order = namedtuple('Order', 'id, items')
 Item = namedtuple('Item', 'type, description, amount, quantity')
 
 MAX_ITEM_AMOUNT = 100000
+MAZ_TOTAL = 1e5
 
 def validorder(order: Order):
     product = Decimal('0') # 買った商品の金額
@@ -32,6 +33,9 @@ def validorder(order: Order):
                 payment += Decimal(str(item.amount))
         else:
             return "Invalid item type: %s" % item.type
+
+        if product > MAZ_TOTAL or payment > MAZ_TOTAL:
+            return "Total amount payable for an order exceeded"
 
     # 商品の金額と支払った金額が一致している場合
     if product == payment:
